@@ -14,6 +14,7 @@ import app.dominio.models.Usuario.enums.RolSistema;
 @NoArgsConstructor
 public class Usuario {
     private long id;
+    private long idRelacionado;
     private String nombreCompleto;
     private String idIdentificacion;
     private String correoElectronico;
