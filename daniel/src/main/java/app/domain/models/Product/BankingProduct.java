@@ -7,11 +7,11 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BankingProduct {
-    private String productCode;
-    private String productName;
-    private String category;
-    private boolean requiresApproval;
-    private String description;
-    private boolean active;
+public class BankingProduct { //producto bancario
+    private String productCode; //codigo del producto
+    private String productName; //nombre del producto
+    private String category; //categoria 
+    private boolean requiresApproval; //requiere aprobacion o no
+    private String description; //descripcion del producto
+    private boolean active; //activo o no
 }

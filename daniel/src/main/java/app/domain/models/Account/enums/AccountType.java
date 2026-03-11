@@ -1,8 +1,8 @@
 package app.domain.models.Account.enums;
 
-public enum AccountType {
-    SAVINGS,
-    CURRENT,
-    PERSONAL,
-    BUSINESS
+public enum AccountType { //tipo de cuenta
+    SAVINGS, //ahorros
+    CURRENT, //corriente
+    PERSONAL, //personal
+    BUSINESS //empresarial
 }

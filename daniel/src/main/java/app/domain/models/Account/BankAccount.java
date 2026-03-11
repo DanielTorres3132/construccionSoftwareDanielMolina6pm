@@ -11,12 +11,12 @@ import app.domain.models.Account.enums.AccountType;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BankAccount {
-    private String accountNumber;
-    private AccountType accountType;
-    private String holderId;
-    private double currentBalance;
-    private String currency;
-    private AccountStatus accountStatus;
-    private LocalDate openingDate;
+public class BankAccount { //cuenta bancaria
+    private String accountNumber; //numero de cuenta
+    private AccountType accountType; //tipo de cuenta
+    private String holderId; //identificacion
+    private double currentBalance; //saldo actual 
+    private String currency; //moneda
+    private AccountStatus accountStatus; //estado de cuenta
+    private LocalDate openingDate; //fecha de apertura
 }
