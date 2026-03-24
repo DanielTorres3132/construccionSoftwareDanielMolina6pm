@@ -1,4 +1,4 @@
-package app.domain.models.User;
+package app.domain.models.Client;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @Setter
 @NoArgsConstructor
-
-
-public class CompanyClient extends User{
+public class CompanyClient {
+    private long id;
     private String companyName;
     private String nit;
     private String companyEmail;
     private String companyPhone;
     private String fiscalAddress;
-    private User legalRepresentative;
-
+    private String legalRepresentativeId;
 }

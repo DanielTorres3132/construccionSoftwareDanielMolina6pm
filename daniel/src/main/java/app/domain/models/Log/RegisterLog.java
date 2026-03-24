@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import app.domain.models.User.enums.SystemRole;
 
@@ -17,5 +18,5 @@ public class RegisterLog { // registro de bitacora
     private long userId; //id del usuario
     private SystemRole userRole; //rol del usuario
     private String affectedProductId; //id del producto afectado
-    private String detailData; //detalle de los datos
+    private Map<String, Object> detailData; //detalle de los datos
 }

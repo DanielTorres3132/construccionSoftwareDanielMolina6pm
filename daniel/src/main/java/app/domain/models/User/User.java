@@ -5,14 +5,12 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 import app.domain.models.User.enums.UserStatus;
-import app.domain.models.User.enums.SystemRole;;
+import app.domain.models.User.enums.SystemRole;
 
 @Getter
 @Setter
 @NoArgsConstructor
-
-
-public abstract class User {
+public class User {
     private long id;
     private String fullName;
     private String identificationId;
@@ -21,7 +19,7 @@ public abstract class User {
     private String phone;
     private String address;
     private String userName;
+    private String password;
     private SystemRole systemRole;
     private UserStatus userStatus;
-
 }
