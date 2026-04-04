@@ -13,12 +13,12 @@ import app.domain.models.Account.enums.Currency;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BankAccount { //cuenta bancaria
-    private String accountNumber; //numero de cuenta
-    private AccountType accountType; //tipo de cuenta
-    private String holderId; //identificacion
-    private BigDecimal currentBalance; //saldo actual 
-    private Currency currency; //moneda
-    private AccountStatus accountStatus; //estado de cuenta
-    private LocalDate openingDate; //fecha de apertura
+public class BankAccount { 
+    private String accountNumber; 
+    private AccountType accountType; 
+    private String holderId; 
+    private BigDecimal currentBalance; 
+    private Currency currency; 
+    private AccountStatus accountStatus; 
+    private LocalDate openingDate; 
 }

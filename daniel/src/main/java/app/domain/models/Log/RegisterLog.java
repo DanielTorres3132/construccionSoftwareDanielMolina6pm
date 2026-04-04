@@ -11,12 +11,12 @@ import app.domain.models.User.enums.SystemRole;
 @Setter
 @Getter
 @NoArgsConstructor
-public class RegisterLog { // registro de bitacora
+public class RegisterLog { 
     private long id;
-    private String operationType; //tipo de operacion
-    private LocalDateTime operationDateTime; //fecha y hora de la operacion
-    private long userId; //id del usuario
-    private SystemRole userRole; //rol del usuario
-    private String affectedProductId; //id del producto afectado
-    private Map<String, Object> detailData; //detalle de los datos
+    private String operationType; 
+    private LocalDateTime operationDateTime; 
+    private long userId; 
+    private SystemRole userRole; 
+    private String affectedProductId; 
+    private Map<String, Object> detailData; 
 }

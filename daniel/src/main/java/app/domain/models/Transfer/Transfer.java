@@ -12,15 +12,15 @@ import app.domain.models.Transfer.enums.TransferStatus;
 @Setter
 @Getter
 @NoArgsConstructor
-public class Transfer { //transferencia
+public class Transfer { 
     private long id;
-    private String sourceAccount; //cuenta origen
-    private String destinationAccount; //cuenta destino
-    private BigDecimal amount; //monto
-    private LocalDateTime creationDate; //fecha de creacion
-    private LocalDateTime approvalDate; //fecha de aprobacion
-    private TransferStatus transferStatus; //estado de la transferencia
-    private long creatorUserId; //id del usuario creador
-    private long approverUserId; //id del usuario aprobador
-    private String rejectionReason; //razon de rechazo
+    private String sourceAccount; 
+    private String destinationAccount;
+    private BigDecimal amount;
+    private LocalDateTime creationDate; 
+    private LocalDateTime approvalDate; 
+    private TransferStatus transferStatus; 
+    private long creatorUserId; 
+    private long approverUserId; 
+    private String rejectionReason; 
 }

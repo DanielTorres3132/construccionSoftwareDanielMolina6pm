@@ -13,19 +13,19 @@ import app.domain.models.Loan.enums.LoanType;
 @Setter
 @Getter
 @NoArgsConstructor
-public class Loan { //prestamo
+public class Loan { 
     private long id; 
-    private LoanType loanType; //tipo de prestamo
-    private String applicantClientId; //id del cliente solicitante
-    private BigDecimal requestedAmount; //monto solicitado
-    private BigDecimal approvedAmount; //monto aprobado
-    private BigDecimal interestRate; //tasa de interes
-    private int termMonths; //plaso en meses
-    private LoanStatus loanStatus; //estado del prestamo
-    private LocalDate requestDate; //fecha de solicitud
-    private LocalDate approvalDate; //fecha de aprobacion
-    private LocalDate disbursementDate; //fecha de desembolso
-    private String disbursementAccount; //cuenta de desembolso
-    private long approverAnalystId; //id del analista que aprueba o rechaza
-    private String rejectionReason; //razon de rechazo
+    private LoanType loanType; 
+    private String applicantClientId; 
+    private BigDecimal requestedAmount;
+    private BigDecimal approvedAmount; 
+    private BigDecimal interestRate; 
+    private int termMonths; 
+    private LoanStatus loanStatus; 
+    private LocalDate requestDate; 
+    private LocalDate approvalDate; 
+    private LocalDate disbursementDate; 
+    private String disbursementAccount; 
+    private long approverAnalystId; 
+    private String rejectionReason; 
 }
