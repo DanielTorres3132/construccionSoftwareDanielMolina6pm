@@ -1,8 +1,8 @@
 package app.domain.models.Transfer.enums;
 
-public enum TransferStatus { //estado de la tranferencia
-    EXECUTED, //ejecutada
-    WAITING_FOR_APPROVAL, //esperando por aprobacion
-    REJECTED, //rechazada
-    EXPIRED //expirada
+public enum TransferStatus { 
+    EXECUTED, 
+    WAITING_FOR_APPROVAL, 
+    REJECTED, 
+    EXPIRED 
 }
