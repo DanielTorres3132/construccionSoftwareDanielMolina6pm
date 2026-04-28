@@ -6,8 +6,9 @@ import app.domain.models.User.User;
 import app.domain.models.User.enums.SystemRole;
 import app.domain.ports.TransferRepositoryPort;
 import app.domain.Exceptions.BusinessException;
-import app.domain.services.RegisterLogService;
-import app.domain.services.UserService;
+import app.domain.services.registerlog.RegisterLogSaveService;
+import app.domain.services.user.UserFindByIdService;
+import app.domain.services.user.UserValidateRoleService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,23 +16,26 @@ import java.util.Map;
 
 public class TransferApproveService {
     private final TransferRepositoryPort transferRepositoryPort;
-    private final RegisterLogService registerLogService;
-    private final UserService userService;
+    private final RegisterLogSaveService registerLogSaveService;
+    private final UserFindByIdService userFindByIdService;
+    private final UserValidateRoleService userValidateRoleService;
     private final TransferFindByIdService transferFindByIdService;
 
     public TransferApproveService(TransferRepositoryPort transferRepositoryPort,
-                                  RegisterLogService registerLogService,
-                                  UserService userService,
+                                  RegisterLogSaveService registerLogSaveService,
+                                  UserFindByIdService userFindByIdService,
+                                  UserValidateRoleService userValidateRoleService,
                                   TransferFindByIdService transferFindByIdService) {
         this.transferRepositoryPort = transferRepositoryPort;
-        this.registerLogService = registerLogService;
-        this.userService = userService;
+        this.registerLogSaveService = registerLogSaveService;
+        this.userFindByIdService = userFindByIdService;
+        this.userValidateRoleService = userValidateRoleService;
         this.transferFindByIdService = transferFindByIdService;
     }
 
     public Transfer execute(long transferId, long approverUserId) {
-        User approver = userService.findById(approverUserId);
-        userService.validateRole(approver, SystemRole.COMPANY_SUPERVISOR);
+        User approver = userFindByIdService.execute(approverUserId);
+        userValidateRoleService.execute(approver, SystemRole.COMPANY_SUPERVISOR);
         Transfer transfer = transferFindByIdService.execute(transferId);
         if (transfer.getTransferStatus() != TransferStatus.WAITING_FOR_APPROVAL)
             throw new BusinessException("Transfer with ID " + transferId + " is not waiting for approval");
@@ -48,7 +52,7 @@ public class TransferApproveService {
         detail.put("previousStatus", TransferStatus.WAITING_FOR_APPROVAL.name());
         detail.put("newStatus", TransferStatus.EXECUTED.name());
         detail.put("approverUserId", approverUserId);
-        registerLogService.saveLog(
+        registerLogSaveService.execute(
                 "TRANSFER_APPROVED",
                 approverUserId,
                 approver.getSystemRole(),

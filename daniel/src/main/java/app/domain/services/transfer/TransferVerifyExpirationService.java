@@ -4,7 +4,7 @@ import app.domain.models.Transfer.Transfer;
 import app.domain.models.Transfer.enums.TransferStatus;
 import app.domain.models.User.enums.SystemRole;
 import app.domain.ports.TransferRepositoryPort;
-import app.domain.services.RegisterLogService;
+import app.domain.services.registerlog.RegisterLogSaveService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -14,12 +14,12 @@ import java.util.Map;
 public class TransferVerifyExpirationService {
     private static final int APPROVAL_WINDOW_HOURS = 1;
     private final TransferRepositoryPort transferRepositoryPort;
-    private final RegisterLogService registerLogService;
+    private final RegisterLogSaveService registerLogSaveService;
 
     public TransferVerifyExpirationService(TransferRepositoryPort transferRepositoryPort,
-                                           RegisterLogService registerLogService) {
+                                           RegisterLogSaveService registerLogSaveService) {
         this.transferRepositoryPort = transferRepositoryPort;
-        this.registerLogService = registerLogService;
+        this.registerLogSaveService = registerLogSaveService;
     }
 
     public void execute() {
@@ -35,7 +35,7 @@ public class TransferVerifyExpirationService {
             detail.put("amount", transfer.getAmount());
             detail.put("sourceAccount", transfer.getSourceAccount());
             detail.put("destinationAccount", transfer.getDestinationAccount());
-            registerLogService.saveLog(
+            registerLogSaveService.execute(
                     "TRANSFER_EXPIRED",
                     transfer.getCreatorUserId(),
                     SystemRole.COMPANY_EMPLOYEE,

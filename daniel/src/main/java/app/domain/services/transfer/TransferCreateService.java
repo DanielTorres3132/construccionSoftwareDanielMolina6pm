@@ -6,8 +6,9 @@ import app.domain.models.User.User;
 import app.domain.models.User.enums.SystemRole;
 import app.domain.ports.TransferRepositoryPort;
 import app.domain.Exceptions.BusinessException;
-import app.domain.services.RegisterLogService;
-import app.domain.services.UserService;
+import app.domain.services.registerlog.RegisterLogSaveService;
+import app.domain.services.user.UserFindByIdService;
+import app.domain.services.user.UserValidateAnyRoleService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,20 +18,23 @@ import java.util.Map;
 public class TransferCreateService {
     private static final BigDecimal HIGH_AMOUNT_THRESHOLD = new BigDecimal("1000000");
     private final TransferRepositoryPort transferRepositoryPort;
-    private final RegisterLogService registerLogService;
-    private final UserService userService;
+    private final RegisterLogSaveService registerLogSaveService;
+    private final UserFindByIdService userFindByIdService;
+    private final UserValidateAnyRoleService userValidateAnyRoleService;
 
     public TransferCreateService(TransferRepositoryPort transferRepositoryPort,
-                                 RegisterLogService registerLogService,
-                                 UserService userService) {
+                                 RegisterLogSaveService registerLogSaveService,
+                                 UserFindByIdService userFindByIdService,
+                                 UserValidateAnyRoleService userValidateAnyRoleService) {
         this.transferRepositoryPort = transferRepositoryPort;
-        this.registerLogService = registerLogService;
-        this.userService = userService;
+        this.registerLogSaveService = registerLogSaveService;
+        this.userFindByIdService = userFindByIdService;
+        this.userValidateAnyRoleService = userValidateAnyRoleService;
     }
 
     public Transfer execute(Transfer transfer, long requestingUserId) {
-        User requestingUser = userService.findById(requestingUserId);
-        userService.validateAnyRole(requestingUser,
+        User requestingUser = userFindByIdService.execute(requestingUserId);
+        userValidateAnyRoleService.execute(requestingUser,
                 SystemRole.COMPANY_EMPLOYEE, SystemRole.COMPANY_SUPERVISOR);
         validateTransferFields(transfer);
         transfer.setCreationDate(LocalDateTime.now());
@@ -47,7 +51,7 @@ public class TransferCreateService {
         detail.put("destinationAccount", transfer.getDestinationAccount());
         detail.put("status", saved.getTransferStatus().name());
         detail.put("requiresApproval", requiresApproval);
-        registerLogService.saveLog(
+        registerLogSaveService.execute(
                 "TRANSFER_CREATED",
                 requestingUserId,
                 requestingUser.getSystemRole(),
