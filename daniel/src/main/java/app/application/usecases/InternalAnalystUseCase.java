@@ -22,6 +22,7 @@ import app.domain.services.registerlog.RegisterLogFindByUserIdService;
 import app.domain.services.registerlog.RegisterLogFindByOperationTypeService;
 import app.domain.services.registerlog.RegisterLogFindByAffectedProductIdService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -89,18 +90,17 @@ public class InternalAnalystUseCase {
         return loanGetOrThrowService.execute(loanId);
     }
 
-    public Loan approveLoan(long requestingUserId, long loanId) throws BusinessException {
+    public Loan approveLoan(long requestingUserId, long loanId, BigDecimal approvedAmount, BigDecimal interestRate) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.INTERNAL_ANALYST);
-        return loanApproveService.execute(loanId);
+        return loanApproveService.execute(loanId, requestingUserId, approvedAmount, interestRate);
     }
 
     public Loan rejectLoan(long requestingUserId, long loanId, String reason) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.INTERNAL_ANALYST);
-        return loanRejectService.execute(loanId, reason);
+        return loanRejectService.execute(loanId, requestingUserId, reason);
     }
-
 
     public List<RegisterLog> getAuditLogByUser(long requestingUserId, long userId) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
@@ -117,6 +117,6 @@ public class InternalAnalystUseCase {
     public List<RegisterLog> getAuditLogByProduct(long requestingUserId, long productId) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.INTERNAL_ANALYST);
-        return registerLogFindByAffectedProductIdService.execute(productId);
+        return registerLogFindByAffectedProductIdService.execute(String.valueOf(productId));
     }
 }
