@@ -117,44 +117,54 @@ public class CompanySupervisorUseCase {
     public Transfer approveTransfer(long requestingUserId, long transferId, String approvalNotes) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMPANY_SUPERVISOR);
-        return transferApproveService.execute(transferId, approvalNotes);
+        return transferApproveService.execute(transferId, requestingUserId);
     }
 
     public Transfer rejectTransfer(long requestingUserId, long transferId, String rejectionReason) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMPANY_SUPERVISOR);
-        return transferRejectService.execute(transferId, rejectionReason);
+        return transferRejectService.execute(transferId, requestingUserId, rejectionReason);
     }
 
     public User createOperativeUser(long requestingUserId, String username, String email,
                                     String firstName, String lastName, String identificationId,
-                                    String identificationType) throws BusinessException {
+                                    String identificationType, String phone, String address, String password) throws BusinessException {
         User supervisor = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(supervisor, SystemRole.COMPANY_SUPERVISOR);
         
-        return userCreateService.execute(username, email, firstName, lastName, 
-                                        identificationId, identificationType, SystemRole.COMPANY_EMPLOYEE);
+        User newUser = new User();
+        newUser.setUserName(username);
+        newUser.setEmail(email);
+        newUser.setFullName(firstName + " " + lastName);
+        newUser.setIdentificationId(identificationId);
+        newUser.setRelatedId(supervisor.getRelatedId()); // Associate with supervisor's company
+        newUser.setPhone(phone);
+        newUser.setAddress(address);
+        newUser.setPassword(password);
+        newUser.setSystemRole(SystemRole.COMPANY_EMPLOYEE);
+        
+        return userCreateService.execute(newUser);
     }
 
-    public User activateOperativeUser(long requestingUserId, long operativeUserId) throws BusinessException {
+    public void activateOperativeUser(long requestingUserId, long operativeUserId) throws BusinessException {
         User supervisor = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(supervisor, SystemRole.COMPANY_SUPERVISOR);
         
-        return userActivateService.execute(operativeUserId);
+        userActivateService.execute(operativeUserId);
     }
 
-    public User deactivateOperativeUser(long requestingUserId, long operativeUserId) throws BusinessException {
+    public void deactivateOperativeUser(long requestingUserId, long operativeUserId) throws BusinessException {
         User supervisor = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(supervisor, SystemRole.COMPANY_SUPERVISOR);
         
-        return userDeactivateService.execute(operativeUserId);
+        userDeactivateService.execute(operativeUserId);
     }
 
-    public User blockOperativeUser(long requestingUserId, long operativeUserId, String blockReason) throws BusinessException {
+    public void blockOperativeUser(long requestingUserId, long operativeUserId, String blockReason) throws BusinessException {
         User supervisor = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(supervisor, SystemRole.COMPANY_SUPERVISOR);
         
-        return userBlockService.execute(operativeUserId, blockReason);
+        userBlockService.execute(operativeUserId);
     }
 
     public User getOperativeUserDetail(long requestingUserId, long operativeUserId) throws BusinessException {
