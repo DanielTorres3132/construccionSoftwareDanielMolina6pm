@@ -48,14 +48,14 @@ public class CompanyEmployeeUseCase {
     private TransferFindByCreatorUserIdService transferFindByCreatorUserIdService;
 
     public CompanyEmployeeUseCase(UserFindByIdService userFindByIdService,
-                                  UserValidateRoleService userValidateRoleService,
-                                  BankAccountFindByHolderIdService bankAccountFindByHolderIdService,
-                                  BankAccountGetOrThrowService bankAccountGetOrThrowService,
-                                  LoanCreateRequestService loanCreateRequestService,
-                                  LoanGetOrThrowService loanGetOrThrowService,
-                                  LoanApproveService loanApproveService,
-                                  TransferCreateService transferCreateService,
-                                  TransferFindByCreatorUserIdService transferFindByCreatorUserIdService) {
+            UserValidateRoleService userValidateRoleService,
+            BankAccountFindByHolderIdService bankAccountFindByHolderIdService,
+            BankAccountGetOrThrowService bankAccountGetOrThrowService,
+            LoanCreateRequestService loanCreateRequestService,
+            LoanGetOrThrowService loanGetOrThrowService,
+            LoanApproveService loanApproveService,
+            TransferCreateService transferCreateService,
+            TransferFindByCreatorUserIdService transferFindByCreatorUserIdService) {
         this.userFindByIdService = userFindByIdService;
         this.userValidateRoleService = userValidateRoleService;
         this.bankAccountFindByHolderIdService = bankAccountFindByHolderIdService;
@@ -98,25 +98,31 @@ public class CompanyEmployeeUseCase {
     }
 
     public Loan createLoanRequest(long requestingUserId, LoanType loanType,
-                                  BigDecimal requestedAmount, int termMonths) throws BusinessException {
+            BigDecimal requestedAmount, int termMonths) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMPANY_EMPLOYEE);
         return loanCreateRequestService.execute(
                 user.getIdentificationId(), loanType, requestedAmount, termMonths);
     }
 
-    public Loan approveLoan(long requestingUserId, long loanId) throws BusinessException {
+    public Loan approveLoan(long requestingUserId, long loanId,
+            BigDecimal approvedAmount, BigDecimal interestRate) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMPANY_EMPLOYEE);
-        return loanApproveService.execute(loanId);
+        return loanApproveService.execute(loanId, requestingUserId, approvedAmount, interestRate);
     }
 
     public Transfer createTransfer(long requestingUserId, String sourceAccountNumber,
-                                   String destinationAccountNumber, BigDecimal amount,
-                                   String description) throws BusinessException {
+            String destinationAccountNumber, BigDecimal amount,
+            String description) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMPANY_EMPLOYEE);
-        return transferCreateService.execute(requestingUserId, sourceAccountNumber,
-                                             destinationAccountNumber, amount, description);
+
+        Transfer transfer = new Transfer();
+        transfer.setSourceAccount(sourceAccountNumber);
+        transfer.setDestinationAccount(destinationAccountNumber);
+        transfer.setAmount(amount);
+
+        return transferCreateService.execute(transfer, requestingUserId);
     }
 }
