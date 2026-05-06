@@ -1,5 +1,8 @@
 package app.application.adapters.api.controllers;
 
+import app.application.adapters.api.request.OpenAccountRequest;
+import app.application.adapters.api.request.OpenAccountForClientRequest;
+import app.application.adapters.api.response.BankAccountResponse;
 import app.application.usecases.TellerEmployeeUseCase;
 import app.domain.Exceptions.BusinessException;
 import app.domain.models.Account.BankAccount;
@@ -9,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.math.BigDecimal;
 
 @RestController
@@ -29,27 +33,47 @@ public class TellerEmployeeController {
     }
 
     @GetMapping("/account/{accountNumber}")
-    public ResponseEntity<BankAccount> getAccountDetail(
+    public ResponseEntity<BankAccountResponse> getAccountDetail(
             @RequestParam long requestingUserId,
             @PathVariable String accountNumber) throws BusinessException {
-        return ResponseEntity.ok(useCase.getAccountDetail(requestingUserId, accountNumber));
+        BankAccount account = useCase.getAccountDetail(requestingUserId, accountNumber);
+        return ResponseEntity.ok(toBankAccountResponse(account));
     }
 
     @PostMapping("/account/open")
-    public ResponseEntity<BankAccount> openAccount(
+    public ResponseEntity<BankAccountResponse> openAccount(
             @RequestParam long requestingUserId,
-            @RequestParam String clientIdentificationId,
-            @RequestParam AccountType accountType,
-            @RequestParam Currency currency) throws BusinessException {
-        return ResponseEntity.ok(useCase.openAccount(requestingUserId, clientIdentificationId, accountType, currency));
+            @Valid @RequestBody OpenAccountRequest request) throws BusinessException {
+        BankAccount account = useCase.openAccount(
+                requestingUserId, 
+                request.getClientIdentificationId(), 
+                request.getAccountType(), 
+                request.getCurrency());
+        return ResponseEntity.ok(toBankAccountResponse(account));
     }
 
     @PostMapping("/account/open-for-client")
-    public ResponseEntity<BankAccount> openAccountForClient(
+    public ResponseEntity<BankAccountResponse> openAccountForClient(
             @RequestParam long requestingUserId,
-            @RequestParam long clientUserId,
-            @RequestParam AccountType accountType,
-            @RequestParam Currency currency) throws BusinessException {
-        return ResponseEntity.ok(useCase.openAccountForClient(requestingUserId, clientUserId, accountType, currency));
+            @Valid @RequestBody OpenAccountForClientRequest request) throws BusinessException {
+        BankAccount account = useCase.openAccountForClient(
+                requestingUserId, 
+                request.getClientUserId(), 
+                request.getAccountType(), 
+                request.getCurrency());
+        return ResponseEntity.ok(toBankAccountResponse(account));
+    }
+
+    private BankAccountResponse toBankAccountResponse(BankAccount account) {
+        BankAccountResponse response = new BankAccountResponse();
+        response.setId(account.getId());
+        response.setAccountNumber(account.getAccountNumber());
+        response.setAccountType(account.getAccountType().toString());
+        response.setCurrency(account.getCurrency().toString());
+        response.setBalance(account.getBalance());
+        response.setStatus(account.getStatus().toString());
+        response.setOpenedDate(account.getOpenedDate());
+        response.setClientId(account.getClientId());
+        return response;
     }
 }
