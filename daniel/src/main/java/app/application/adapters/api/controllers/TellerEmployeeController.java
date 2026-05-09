@@ -1,25 +1,27 @@
 package app.application.adapters.api.controllers;
 
-import app.application.adapters.api.request.OpenAccountRequest;
-import app.application.adapters.api.request.OpenAccountForClientRequest;
-import app.application.adapters.api.response.BankAccountResponse;
-import app.application.usecases.TellerEmployeeUseCase;
-import app.domain.Exceptions.BusinessException;
-import app.domain.models.Account.BankAccount;
-import app.domain.models.Account.enums.AccountType;
-import app.domain.models.Account.enums.Currency;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
+import app.application.adapters.api.request.OpenAccountForClientRequest;
+import app.application.adapters.api.request.OpenAccountRequest;
+import app.application.adapters.api.response.BankAccountResponse;
+import app.application.usecases.TellerEmployeeUseCase;
+import app.domain.Exceptions.BusinessException;
+import app.domain.models.Account.BankAccount;
+
 import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/teller-employee")
 @Validated
 public class TellerEmployeeController {
-    private final TellerEmployeeUseCase useCase;
+
+    @Autowired
+    private TellerEmployeeUseCase useCase;
 
     public TellerEmployeeController(TellerEmployeeUseCase useCase) {
         this.useCase = useCase;
@@ -45,9 +47,9 @@ public class TellerEmployeeController {
             @RequestParam long requestingUserId,
             @Valid @RequestBody OpenAccountRequest request) throws BusinessException {
         BankAccount account = useCase.openAccount(
-                requestingUserId, 
-                request.getClientIdentificationId(), 
-                request.getAccountType(), 
+                requestingUserId,
+                request.getClientIdentificationId(),
+                request.getAccountType(),
                 request.getCurrency());
         return ResponseEntity.ok(toBankAccountResponse(account));
     }
@@ -57,23 +59,24 @@ public class TellerEmployeeController {
             @RequestParam long requestingUserId,
             @Valid @RequestBody OpenAccountForClientRequest request) throws BusinessException {
         BankAccount account = useCase.openAccountForClient(
-                requestingUserId, 
-                request.getClientUserId(), 
-                request.getAccountType(), 
+                requestingUserId,
+                request.getClientUserId(),
+                request.getAccountType(),
                 request.getCurrency());
         return ResponseEntity.ok(toBankAccountResponse(account));
     }
 
-    private BankAccountResponse toBankAccountResponse(BankAccount account) {
+    // ─── Mapper ───────────────────────────────────────────────────────────────
+
+    private static BankAccountResponse toBankAccountResponse(BankAccount account) {
         BankAccountResponse response = new BankAccountResponse();
-        response.setId(account.getId());
         response.setAccountNumber(account.getAccountNumber());
         response.setAccountType(account.getAccountType().toString());
+        response.setHolderId(account.getHolderId());
+        response.setCurrentBalance(account.getCurrentBalance());
         response.setCurrency(account.getCurrency().toString());
-        response.setBalance(account.getBalance());
-        response.setStatus(account.getStatus().toString());
-        response.setOpenedDate(account.getOpenedDate());
-        response.setClientId(account.getClientId());
+        response.setAccountStatus(account.getAccountStatus().toString());
+        response.setOpeningDate(account.getOpeningDate());
         return response;
     }
 }

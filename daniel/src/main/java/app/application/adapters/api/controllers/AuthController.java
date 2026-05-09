@@ -1,5 +1,11 @@
 package app.application.adapters.api.controllers;
 
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import app.application.adapters.api.request.LoginRequest;
 import app.application.adapters.api.request.RefreshTokenRequest;
 import app.application.adapters.api.response.AuthTokenResponse;
@@ -8,163 +14,85 @@ import app.application.usecases.AuthUseCase;
 import app.domain.Exceptions.BusinessException;
 import app.domain.models.User.User;
 import app.infrastructure.security.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
 @Validated
 public class AuthController {
-    
+
     @Autowired
     private AuthUseCase authUseCase;
-    
+
     @Autowired
     private JwtUtil jwtUtil;
-    
-    /**
-     * Endpoint para login de usuario
-     * @param loginRequest Datos del login (documento y contraseña)
-     * @return Token JWT y datos del usuario
-     */
+
+    public AuthController(AuthUseCase authUseCase, JwtUtil jwtUtil) {
+        this.authUseCase = authUseCase;
+        this.jwtUtil = jwtUtil;
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<AuthTokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) throws BusinessException {
-        // Autenticar usuario
-        User user = authUseCase.authenticate(loginRequest.getDocument(), loginRequest.getPassword());
-        
-        // Generar token JWT
+    public ResponseEntity<AuthTokenResponse> login(@Valid @RequestBody LoginRequest request) throws BusinessException {
+        User user = authUseCase.authenticate(request.getDocument(), request.getPassword());
+
         String accessToken = jwtUtil.generateToken(
-                user.getIdentificationId(), 
-                user.getUsername(), 
-                user.getRole().toString()
+                user.getIdentificationId(),
+                user.getUserName(),
+                user.getSystemRole().toString()
         );
-        
-        // Generar refresh token (puede ser un segundo token con mayor expiración)
+
         String refreshToken = jwtUtil.generateToken(
-                user.getIdentificationId(), 
-                user.getUsername(), 
-                user.getRole().toString()
+                user.getIdentificationId(),
+                user.getUserName(),
+                user.getSystemRole().toString()
         );
-        
-        // Preparar respuesta
-        UserAuthResponse userResponse = new UserAuthResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getRole().toString(),
-                user.getIdentificationId()
-        );
-        
+
         AuthTokenResponse response = new AuthTokenResponse(
                 accessToken,
                 refreshToken,
                 "Bearer",
-                3600, // 1 hora en segundos
-                userResponse
+                3600,
+                toUserAuthResponse(user)
         );
-        
+
         return ResponseEntity.ok(response);
     }
-    
-    /**
-     * Endpoint para refrescar el token JWT
-     * @param refreshTokenRequest Token de actualización
-     * @return Nuevo token JWT
-     */
+
     @PostMapping("/refresh")
-    public ResponseEntity<AuthTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) throws BusinessException {
-        try {
-            // Validar token
-            if (!jwtUtil.isTokenValid(refreshTokenRequest.getRefreshToken())) {
-                throw new BusinessException("Token de actualización inválido o expirado");
-            }
-            
-            // Extraer información del token
-            String username = jwtUtil.extractUsername(refreshTokenRequest.getRefreshToken());
-            String document = jwtUtil.extractDocument(refreshTokenRequest.getRefreshToken());
-            String role = jwtUtil.extractRole(refreshTokenRequest.getRefreshToken());
-            
-            // Obtener usuario
-            User user = authUseCase.findByDocument(document);
-            
-            if (user == null) {
-                throw new BusinessException("Usuario no encontrado");
-            }
-            
-            // Generar nuevo token
-            String newAccessToken = jwtUtil.generateToken(document, username, role);
-            String newRefreshToken = jwtUtil.generateToken(document, username, role);
-            
-            // Preparar respuesta
-            UserAuthResponse userResponse = new UserAuthResponse(
-                    user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getRole().toString(),
-                    user.getIdentificationId()
-            );
-            
-            AuthTokenResponse response = new AuthTokenResponse(
-                    newAccessToken,
-                    newRefreshToken,
-                    "Bearer",
-                    3600, // 1 hora en segundos
-                    userResponse
-            );
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            throw new BusinessException("Error al refrescar el token: " + e.getMessage());
-        }
-    }
-    
-    /**
-     * Endpoint para validar token JWT
-     * @param token Token a validar
-     * @return Estado de validación
-     */
-    @PostMapping("/validate")
-    public ResponseEntity<ValidateTokenResponse> validateToken(@RequestParam String token) {
-        boolean isValid = jwtUtil.isTokenValid(token);
-        
-        ValidateTokenResponse response = new ValidateTokenResponse(
-                isValid,
-                isValid ? "Token válido" : "Token inválido o expirado"
+    public ResponseEntity<AuthTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) throws BusinessException {
+        if (!jwtUtil.isTokenValid(request.getRefreshToken()))
+            throw new BusinessException("Token de actualización inválido o expirado");
+
+        String identificationId = jwtUtil.extractDocument(request.getRefreshToken());
+        String userName = jwtUtil.extractUsername(request.getRefreshToken());
+        String role = jwtUtil.extractRole(request.getRefreshToken());
+
+        User user = authUseCase.findByIdentificationId(identificationId);
+
+        String newAccessToken = jwtUtil.generateToken(identificationId, userName, role);
+        String newRefreshToken = jwtUtil.generateToken(identificationId, userName, role);
+
+        AuthTokenResponse response = new AuthTokenResponse(
+                newAccessToken,
+                newRefreshToken,
+                "Bearer",
+                3600,
+                toUserAuthResponse(user)
         );
-        
-        return isValid 
-                ? ResponseEntity.ok(response) 
-                : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+
+        return ResponseEntity.ok(response);
     }
-    
-    /**
-     * DTO interno para respuesta de validación de token
-     */
-    public static class ValidateTokenResponse {
-        private boolean valid;
-        private String message;
-        
-        public ValidateTokenResponse(boolean valid, String message) {
-            this.valid = valid;
-            this.message = message;
-        }
-        
-        public boolean isValid() {
-            return valid;
-        }
-        
-        public String getMessage() {
-            return message;
-        }
+
+    // ─── Mapper ───────────────────────────────────────────────────────────────
+
+    private static UserAuthResponse toUserAuthResponse(User user) {
+        return new UserAuthResponse(
+                user.getId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getFullName(),
+                user.getSystemRole().toString(),
+                user.getIdentificationId()
+        );
     }
 }

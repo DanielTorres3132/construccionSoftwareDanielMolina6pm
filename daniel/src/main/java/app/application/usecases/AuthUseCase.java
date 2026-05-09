@@ -1,67 +1,41 @@
 package app.application.usecases;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import app.domain.Exceptions.BusinessException;
 import app.domain.models.User.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import app.domain.services.user.UserFindByIdService;
+import app.domain.services.user.UserFindByIdentificationIdService;
+import app.domain.services.user.UserLoginService;
 
 @Service
 public class AuthUseCase {
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    /**
-     * Autentica un usuario con documento y contraseña
-     * @param document Documento del usuario
-     * @param password Contraseña del usuario
-     * @return Usuario autenticado
-     */
-    public User authenticate(String document, String password) throws BusinessException {
-        // Esta lógica se debe implementar de acuerdo a tu infraestructura de persistencia
-        User user = findByDocument(document);
-        
-        if (user == null) {
-            throw new BusinessException("Usuario no encontrado");
-        }
-        
-        if (!matchesPassword(password, user.getPassword())) {
-            throw new BusinessException("Contraseña incorrecta");
-        }
-        
-        return user;
+    @Autowired
+    private UserLoginService userLoginService;
+    @Autowired
+    private UserFindByIdentificationIdService userFindByIdentificationIdService;
+    @Autowired
+    private UserFindByIdService userFindByIdService;
+
+    public AuthUseCase(UserLoginService userLoginService,
+                       UserFindByIdentificationIdService userFindByIdentificationIdService,
+                       UserFindByIdService userFindByIdService) {
+        this.userLoginService = userLoginService;
+        this.userFindByIdentificationIdService = userFindByIdentificationIdService;
+        this.userFindByIdService = userFindByIdService;
     }
-    
-    /**
-     * Obtiene un usuario por documento
-     * @param document Documento del usuario
-     * @return Usuario encontrado o null
-     */
-    public User findByDocument(String document) throws BusinessException {
-        // Esta lógica se debe implementar consultando la base de datos
-        // Por ahora se retorna null
-        return null;
+
+    public User authenticate(String userName, String password) throws BusinessException {
+        return userLoginService.execute(userName, password);
     }
-    
-    /**
-     * Obtiene un usuario por ID
-     * @param userId ID del usuario
-     * @return Usuario encontrado o null
-     */
-    public User findById(Long userId) throws BusinessException {
-        // Esta lógica se debe implementar consultando la base de datos
-        // Por ahora se retorna null
-        return null;
+
+    public User findByIdentificationId(String identificationId) throws BusinessException {
+        return userFindByIdentificationIdService.execute(identificationId);
     }
-    
-    /**
-     * Verifica si la contraseña coincide con el hash almacenado
-     * @param rawPassword Contraseña sin encriptar
-     * @param encodedPassword Contraseña encriptada
-     * @return true si coincide, false de lo contrario
-     */
-    public boolean matchesPassword(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
+
+    public User findById(long userId) throws BusinessException {
+        return userFindByIdService.execute(userId);
     }
 }

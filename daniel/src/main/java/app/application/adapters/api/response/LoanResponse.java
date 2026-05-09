@@ -4,20 +4,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 public class LoanResponse {
-    private Long id;
-    private Long clientId;
+    private long id;
+    private String applicantClientId;
     private String loanType;
     private BigDecimal requestedAmount;
     private BigDecimal approvedAmount;
     private BigDecimal interestRate;
     private int termMonths;
-    private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime approvedAt;
+    private String loanStatus;
+    private LocalDate requestDate;
+    private LocalDate approvalDate;
+    private LocalDate disbursementDate;
+    private String disbursementAccount;
     private String rejectionReason;
 }

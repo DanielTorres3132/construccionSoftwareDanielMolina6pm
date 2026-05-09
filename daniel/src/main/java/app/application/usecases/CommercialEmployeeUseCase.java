@@ -4,11 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import app.domain.Exceptions.BusinessException;
-import app.domain.models.Account.BankAccount;
 import app.domain.models.Client.CompanyClient;
 import app.domain.models.Client.NaturalPersonClient;
 import app.domain.models.Loan.Loan;
-import app.domain.models.Transfer.Transfer;
 import app.domain.models.User.User;
 import app.domain.models.User.enums.SystemRole;
 
@@ -18,16 +16,9 @@ import app.domain.services.companyclient.CompanyClientCreateService;
 import app.domain.services.companyclient.CompanyClientFindByIdService;
 import app.domain.services.naturalpersonclient.NaturalPersonClientCreateService;
 import app.domain.services.naturalpersonclient.NaturalPersonClientFindByIdService;
-import app.domain.services.loan.LoanApproveService;
-import app.domain.services.loan.LoanRejectService;
 import app.domain.services.loan.LoanGetOrThrowService;
-import app.domain.services.transfer.TransferApproveService;
-import app.domain.services.transfer.TransferRejectService;
-import app.domain.services.transfer.TransferFindPendingApprovalService;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class CommercialEmployeeUseCase {
@@ -45,17 +36,7 @@ public class CommercialEmployeeUseCase {
     @Autowired
     private NaturalPersonClientFindByIdService naturalPersonClientFindByIdService;
     @Autowired
-    private LoanApproveService loanApproveService;
-    @Autowired
-    private LoanRejectService loanRejectService;
-    @Autowired
     private LoanGetOrThrowService loanGetOrThrowService;
-    @Autowired
-    private TransferApproveService transferApproveService;
-    @Autowired
-    private TransferRejectService transferRejectService;
-    @Autowired
-    private TransferFindPendingApprovalService transferFindPendingApprovalService;
 
     public CommercialEmployeeUseCase(UserFindByIdService userFindByIdService,
                                      UserValidateRoleService userValidateRoleService,
@@ -63,28 +44,19 @@ public class CommercialEmployeeUseCase {
                                      CompanyClientFindByIdService companyClientFindByIdService,
                                      NaturalPersonClientCreateService naturalPersonClientCreateService,
                                      NaturalPersonClientFindByIdService naturalPersonClientFindByIdService,
-                                     LoanApproveService loanApproveService,
-                                     LoanRejectService loanRejectService,
-                                     LoanGetOrThrowService loanGetOrThrowService,
-                                     TransferApproveService transferApproveService,
-                                     TransferRejectService transferRejectService,
-                                     TransferFindPendingApprovalService transferFindPendingApprovalService) {
+                                     LoanGetOrThrowService loanGetOrThrowService) {
         this.userFindByIdService = userFindByIdService;
         this.userValidateRoleService = userValidateRoleService;
         this.companyClientCreateService = companyClientCreateService;
         this.companyClientFindByIdService = companyClientFindByIdService;
         this.naturalPersonClientCreateService = naturalPersonClientCreateService;
         this.naturalPersonClientFindByIdService = naturalPersonClientFindByIdService;
-        this.loanApproveService = loanApproveService;
-        this.loanRejectService = loanRejectService;
         this.loanGetOrThrowService = loanGetOrThrowService;
-        this.transferApproveService = transferApproveService;
-        this.transferRejectService = transferRejectService;
-        this.transferFindPendingApprovalService = transferFindPendingApprovalService;
     }
 
     public CompanyClient createCompanyClient(long requestingUserId, String nit, String companyName,
-                                        String address, String phone, String email, String legalRepresentativeId) throws BusinessException {
+                                             String address, String phone, String email,
+                                             String legalRepresentativeId) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMMERCIAL_EMPLOYEE);
         CompanyClient client = new CompanyClient();
@@ -98,8 +70,8 @@ public class CommercialEmployeeUseCase {
     }
 
     public NaturalPersonClient createNaturalPersonClient(long requestingUserId, String identificationId,
-                                                         String fullName, String address,
-                                                         String phone, String email, LocalDate birthDate) throws BusinessException {
+                                                         String fullName, String address, String phone,
+                                                         String email, LocalDate birthDate) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMMERCIAL_EMPLOYEE);
         NaturalPersonClient client = new NaturalPersonClient();
@@ -124,39 +96,9 @@ public class CommercialEmployeeUseCase {
         return naturalPersonClientFindByIdService.execute(clientId);
     }
 
-    public Loan approveLoan(long requestingUserId, long loanId, BigDecimal approvedAmount, BigDecimal interestRate) throws BusinessException {
-        User user = userFindByIdService.execute(requestingUserId);
-        userValidateRoleService.execute(user, SystemRole.COMMERCIAL_EMPLOYEE);
-        return loanApproveService.execute(loanId, requestingUserId, approvedAmount, interestRate);
-    }
-
-    public Loan rejectLoan(long requestingUserId, long loanId, String reason) throws BusinessException {
-        User user = userFindByIdService.execute(requestingUserId);
-        userValidateRoleService.execute(user, SystemRole.COMMERCIAL_EMPLOYEE);
-        return loanRejectService.execute(loanId, requestingUserId, reason);
-    }
-
     public Loan getLoanDetail(long requestingUserId, long loanId) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMMERCIAL_EMPLOYEE);
         return loanGetOrThrowService.execute(loanId);
-    }
-
-    public Transfer approveTransfer(long requestingUserId, long transferId) throws BusinessException {
-        User user = userFindByIdService.execute(requestingUserId);
-        userValidateRoleService.execute(user, SystemRole.COMMERCIAL_EMPLOYEE);
-        return transferApproveService.execute(transferId, requestingUserId);
-    }
-
-    public Transfer rejectTransfer(long requestingUserId, long transferId, String reason) throws BusinessException {
-        User user = userFindByIdService.execute(requestingUserId);
-        userValidateRoleService.execute(user, SystemRole.COMMERCIAL_EMPLOYEE);
-        return transferRejectService.execute(transferId, requestingUserId, reason);
-    }
-
-    public List<Transfer> getPendingTransfers(long requestingUserId) throws BusinessException {
-        User user = userFindByIdService.execute(requestingUserId);
-        userValidateRoleService.execute(user, SystemRole.COMMERCIAL_EMPLOYEE);
-        return transferFindPendingApprovalService.execute();
     }
 }

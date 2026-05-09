@@ -3,7 +3,6 @@ package app.infrastructure.security;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,34 +29,57 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // .authorizeHttpRequests(auth -> auth
-                    // Login is public
-                    // .requestMatchers("/auth/**").permitAll()
-                    // // Human Resources management
-                    // .requestMatchers("/human-resources/**").hasRole("HUMANRESOURCES")
-                    // // Doctor endpoints
-                    // .requestMatchers(HttpMethod.POST, "/doctor/**").hasRole("DOCTOR")
-                    // .requestMatchers(HttpMethod.GET, "/doctor/**")
-                    //     .hasAnyRole("DOCTOR", "NURSE", "ADMINISTRATIVE")
-                    // // Nurse endpoints
-                    // .requestMatchers(HttpMethod.POST, "/nurse/**").hasRole("NURSE")
-                    // .requestMatchers(HttpMethod.GET, "/nurse/**")
-                    //     .hasAnyRole("NURSE", "DOCTOR")
-                    // // Administrative endpoints
-                    // .requestMatchers("/administrative/**").hasRole("ADMINISTRATIVE")
-                    // .anyRequest().authenticated()
-            // )
+            .authorizeHttpRequests(auth -> auth
+
+                    // Login público
+                    .requestMatchers("/api/auth/**").permitAll()
+
+                    // Cliente persona natural
+                    .requestMatchers("/api/natural-person-client/**")
+                            .hasRole("NATURAL_PERSON_CLIENT")
+
+                    // Cliente empresa
+                    .requestMatchers("/api/company-client/**")
+                            .hasRole("COMPANY_CLIENT")
+
+                    // Empleado de ventanilla (cajero)
+                    .requestMatchers("/api/teller-employee/**")
+                            .hasRole("TELLER_EMPLOYEE")
+
+                    // Empleado comercial
+                    .requestMatchers("/api/commercial-employee/**")
+                            .hasRole("COMMERCIAL_EMPLOYEE")
+
+                    // Empleado operativo de empresa
+                    .requestMatchers("/api/company-employee/**")
+                            .hasRole("COMPANY_EMPLOYEE")
+
+                    // Supervisor de empresa
+                    .requestMatchers("/api/company-supervisor/**")
+                            .hasRole("COMPANY_SUPERVISOR")
+
+                    // Analista interno del banco
+                    .requestMatchers("/api/internal-analyst/**")
+                            .hasRole("INTERNAL_ANALYST")
+
+                    // Cualquier otra petición requiere autenticación
+                    .anyRequest().authenticated()
+            )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(ex -> ex
                     .authenticationEntryPoint((request, response, authException) -> {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("application/json;charset=UTF-8");
-                        response.getWriter().write("{\"status\":401,\"message\":\"No autenticado: se requiere un token válido\",\"errors\":null}");
+                        response.getWriter().write(
+                                "{\"status\":401,\"message\":\"No autenticado: se requiere un token válido\",\"errors\":null}"
+                        );
                     })
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         response.setContentType("application/json;charset=UTF-8");
-                        response.getWriter().write("{\"status\":403,\"message\":\"Acceso denegado: no tiene permisos para este recurso\",\"errors\":null}");
+                        response.getWriter().write(
+                                "{\"status\":403,\"message\":\"Acceso denegado: no tiene permisos para este recurso\",\"errors\":null}"
+                        );
                     })
             );
 

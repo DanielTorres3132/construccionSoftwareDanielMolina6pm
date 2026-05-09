@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class TransferResponse {
-    private Long id;
+    private long id;
     private String sourceAccount;
     private String destinationAccount;
     private BigDecimal amount;
-    private String status;
-    private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime approvedAt;
-    private String approvalNotes;
+    private String transferStatus;
+    private LocalDateTime creationDate;
+    private LocalDateTime approvalDate;
+    private long creatorUserId;
+    private long approverUserId;
     private String rejectionReason;
 }

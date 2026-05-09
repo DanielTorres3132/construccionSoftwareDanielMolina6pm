@@ -17,7 +17,6 @@ import app.domain.services.bankaccount.BankAccountFindByHolderIdService;
 import app.domain.services.bankaccount.BankAccountGetOrThrowService;
 import app.domain.services.loan.LoanCreateRequestService;
 import app.domain.services.loan.LoanGetOrThrowService;
-import app.domain.services.loan.LoanApproveService;
 import app.domain.services.transfer.TransferCreateService;
 import app.domain.services.transfer.TransferFindByCreatorUserIdService;
 
@@ -41,28 +40,24 @@ public class CompanyEmployeeUseCase {
     @Autowired
     private LoanGetOrThrowService loanGetOrThrowService;
     @Autowired
-    private LoanApproveService loanApproveService;
-    @Autowired
     private TransferCreateService transferCreateService;
     @Autowired
     private TransferFindByCreatorUserIdService transferFindByCreatorUserIdService;
 
     public CompanyEmployeeUseCase(UserFindByIdService userFindByIdService,
-            UserValidateRoleService userValidateRoleService,
-            BankAccountFindByHolderIdService bankAccountFindByHolderIdService,
-            BankAccountGetOrThrowService bankAccountGetOrThrowService,
-            LoanCreateRequestService loanCreateRequestService,
-            LoanGetOrThrowService loanGetOrThrowService,
-            LoanApproveService loanApproveService,
-            TransferCreateService transferCreateService,
-            TransferFindByCreatorUserIdService transferFindByCreatorUserIdService) {
+                                  UserValidateRoleService userValidateRoleService,
+                                  BankAccountFindByHolderIdService bankAccountFindByHolderIdService,
+                                  BankAccountGetOrThrowService bankAccountGetOrThrowService,
+                                  LoanCreateRequestService loanCreateRequestService,
+                                  LoanGetOrThrowService loanGetOrThrowService,
+                                  TransferCreateService transferCreateService,
+                                  TransferFindByCreatorUserIdService transferFindByCreatorUserIdService) {
         this.userFindByIdService = userFindByIdService;
         this.userValidateRoleService = userValidateRoleService;
         this.bankAccountFindByHolderIdService = bankAccountFindByHolderIdService;
         this.bankAccountGetOrThrowService = bankAccountGetOrThrowService;
         this.loanCreateRequestService = loanCreateRequestService;
         this.loanGetOrThrowService = loanGetOrThrowService;
-        this.loanApproveService = loanApproveService;
         this.transferCreateService = transferCreateService;
         this.transferFindByCreatorUserIdService = transferFindByCreatorUserIdService;
     }
@@ -98,31 +93,23 @@ public class CompanyEmployeeUseCase {
     }
 
     public Loan createLoanRequest(long requestingUserId, LoanType loanType,
-            BigDecimal requestedAmount, int termMonths) throws BusinessException {
+                                  BigDecimal requestedAmount, int termMonths) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMPANY_EMPLOYEE);
-        return loanCreateRequestService.execute(
-                user.getIdentificationId(), loanType, requestedAmount, termMonths);
+        return loanCreateRequestService.execute(user.getIdentificationId(), loanType, requestedAmount, termMonths);
     }
 
-    public Loan approveLoan(long requestingUserId, long loanId,
-            BigDecimal approvedAmount, BigDecimal interestRate) throws BusinessException {
+    public Transfer createTransfer(long requestingUserId, String sourceAccount,
+                                   String destinationAccount, BigDecimal amount) throws BusinessException {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.COMPANY_EMPLOYEE);
-        return loanApproveService.execute(loanId, requestingUserId, approvedAmount, interestRate);
-    }
-
-    public Transfer createTransfer(long requestingUserId, String sourceAccountNumber,
-            String destinationAccountNumber, BigDecimal amount,
-            String description) throws BusinessException {
-        User user = userFindByIdService.execute(requestingUserId);
-        userValidateRoleService.execute(user, SystemRole.COMPANY_EMPLOYEE);
-
+        BankAccount source = bankAccountGetOrThrowService.execute(sourceAccount);
+        if (!source.getHolderId().equals(user.getIdentificationId()))
+            throw new BusinessException("Account " + sourceAccount + " does not belong to your company");
         Transfer transfer = new Transfer();
-        transfer.setSourceAccount(sourceAccountNumber);
-        transfer.setDestinationAccount(destinationAccountNumber);
+        transfer.setSourceAccount(sourceAccount);
+        transfer.setDestinationAccount(destinationAccount);
         transfer.setAmount(amount);
-
         return transferCreateService.execute(transfer, requestingUserId);
     }
 }

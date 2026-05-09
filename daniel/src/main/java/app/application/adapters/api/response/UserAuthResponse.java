@@ -8,11 +8,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class UserAuthResponse {
-    private Long id;
-    private String username;
+    private long id;
+    private String userName;
     private String email;
-    private String firstName;
-    private String lastName;
-    private String role;
-    private String document;
+    private String fullName;
+    private String systemRole;
+    private String identificationId;
 }
