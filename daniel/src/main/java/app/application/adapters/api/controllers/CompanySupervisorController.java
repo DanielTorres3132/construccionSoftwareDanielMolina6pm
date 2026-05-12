@@ -52,7 +52,7 @@ public class CompanySupervisorController {
     @GetMapping("/transfers/pending")
     public ResponseEntity<List<TransferResponse>> getPendingTransfers(@RequestParam long requestingUserId) throws BusinessException {
         List<Transfer> transfers = useCase.getPendingTransfersForApproval(requestingUserId);
-        return ResponseEntity.ok(transfers.stream().map(this::toTransferResponse).toList());
+        return ResponseEntity.ok(transfers.stream().map(CompanySupervisorController::toTransferResponse).toList());
     }
 
     @GetMapping("/transfer/{transferId}")

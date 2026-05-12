@@ -58,7 +58,8 @@ public class InternalAnalystController {
             @RequestParam long requestingUserId,
             @PathVariable long loanId,
             @Valid @RequestBody LoanApprovalRequest request) throws BusinessException {
-        Loan loan = useCase.approveLoan(requestingUserId, loanId, request.getApprovedAmount(), request.getInterestRate());
+        Loan loan = useCase.approveLoan(requestingUserId, loanId, request.getApprovedAmount(),
+                request.getInterestRate());
         return ResponseEntity.ok(toLoanResponse(loan));
     }
 
@@ -76,7 +77,7 @@ public class InternalAnalystController {
             @RequestParam long requestingUserId,
             @PathVariable long userId) throws BusinessException {
         List<RegisterLog> logs = useCase.getAuditLogByUser(requestingUserId, userId);
-        return ResponseEntity.ok(logs.stream().map(this::toAuditLogResponse).toList());
+        return ResponseEntity.ok(logs.stream().map(InternalAnalystController::toAuditLogResponse).toList());
     }
 
     @GetMapping("/audit/operation-type/{operationType}")
@@ -84,7 +85,7 @@ public class InternalAnalystController {
             @RequestParam long requestingUserId,
             @PathVariable String operationType) throws BusinessException {
         List<RegisterLog> logs = useCase.getAuditLogByOperationType(requestingUserId, operationType);
-        return ResponseEntity.ok(logs.stream().map(this::toAuditLogResponse).toList());
+        return ResponseEntity.ok(logs.stream().map(InternalAnalystController::toAuditLogResponse).toList());
     }
 
     @GetMapping("/audit/product/{productId}")
@@ -92,7 +93,7 @@ public class InternalAnalystController {
             @RequestParam long requestingUserId,
             @PathVariable long productId) throws BusinessException {
         List<RegisterLog> logs = useCase.getAuditLogByProduct(requestingUserId, productId);
-        return ResponseEntity.ok(logs.stream().map(this::toAuditLogResponse).toList());
+        return ResponseEntity.ok(logs.stream().map(InternalAnalystController::toAuditLogResponse).toList());
     }
 
     // ─── Mappers ──────────────────────────────────────────────────────────────

@@ -59,7 +59,7 @@ public class NaturalPersonClientController {
     @GetMapping("/transfers")
     public ResponseEntity<List<TransferResponse>> getOwnTransferHistory(@RequestParam long requestingUserId) throws BusinessException {
         List<Transfer> transfers = useCase.getOwnTransferHistory(requestingUserId);
-        return ResponseEntity.ok(transfers.stream().map(this::toTransferResponse).toList());
+        return ResponseEntity.ok(transfers.stream().map(NaturalPersonClientController::toTransferResponse).toList());
     }
 
     @PostMapping("/loan-request")
