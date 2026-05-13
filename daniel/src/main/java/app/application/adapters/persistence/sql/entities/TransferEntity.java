@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import app.domain.models.Transfer.enums.TransferStatus;
+
 @Entity
 @Table(name = "transfers")
 @Data
@@ -30,9 +32,22 @@ public class TransferEntity {
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
-    @Column(name = "transfer_date", nullable = false)
-    private LocalDateTime transferDate;
+    @Column(name = "creation_date", nullable = false)
+    private LocalDateTime creationDate;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "approval_date")
+    private LocalDateTime approvalDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transfer_status", nullable = false)
+    private TransferStatus transferStatus;
+
+    @Column(name = "creator_user_id", nullable = false)
+    private long creatorUserId;
+
+    @Column(name = "approver_user_id")
+    private long approverUserId;
+
+    @Column(name = "rejection_reason")
+    private String rejectionReason;
 }

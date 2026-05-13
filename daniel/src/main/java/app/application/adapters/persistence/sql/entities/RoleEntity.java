@@ -19,5 +19,5 @@ public class RoleEntity {
     private Long id;
 
     @Column(name = "name", nullable = false, unique = true)
-    private String name; // ADMIN, EMPLOYEE, CLIENT
+    private String name; // NATURAL_PERSON_CLIENT, COMPANY_CLIENT, TELLER_EMPLOYEE, etc.
 }
