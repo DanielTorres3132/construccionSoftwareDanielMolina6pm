@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TransferVerifyExpirationService {
     private static final int APPROVAL_WINDOW_HOURS = 1;
     private final TransferRepositoryPort transferRepositoryPort;

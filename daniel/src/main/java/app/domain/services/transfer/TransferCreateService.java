@@ -9,12 +9,14 @@ import app.domain.Exceptions.BusinessException;
 import app.domain.services.registerlog.RegisterLogSaveService;
 import app.domain.services.user.UserFindByIdService;
 import app.domain.services.user.UserValidateAnyRoleService;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
 public class TransferCreateService {
     private static final BigDecimal HIGH_AMOUNT_THRESHOLD = new BigDecimal("1000000");
     private final TransferRepositoryPort transferRepositoryPort;

@@ -5,7 +5,9 @@ import app.domain.ports.NaturalPersonClientRepositoryPort;
 import app.domain.Exceptions.BusinessException;
 import java.time.LocalDate;
 import java.time.Period;
+import org.springframework.stereotype.Service;
 
+@Service
 public class NaturalPersonClientCreateService {
     private final NaturalPersonClientRepositoryPort naturalPersonClientRepositoryPort;
 

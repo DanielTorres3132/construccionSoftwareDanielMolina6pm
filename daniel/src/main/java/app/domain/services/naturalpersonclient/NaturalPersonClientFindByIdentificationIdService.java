@@ -3,7 +3,9 @@ package app.domain.services.naturalpersonclient;
 import app.domain.models.Client.NaturalPersonClient;
 import app.domain.ports.NaturalPersonClientRepositoryPort;
 import app.domain.Exceptions.BusinessException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class NaturalPersonClientFindByIdentificationIdService {
     private final NaturalPersonClientRepositoryPort naturalPersonClientRepositoryPort;
 

@@ -3,7 +3,9 @@ package app.domain.services.companyclient;
 import app.domain.models.Client.CompanyClient;
 import app.domain.ports.CompanyClientRepositoryPort;
 import app.domain.Exceptions.BusinessException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CompanyClientFindByNitService {
     private final CompanyClientRepositoryPort companyClientRepositoryPort;
 

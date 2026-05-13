@@ -4,7 +4,9 @@ import app.domain.models.Transfer.Transfer;
 import app.domain.ports.TransferRepositoryPort;
 import app.domain.Exceptions.BusinessException;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TransferFindBySourceAccountService {
     private final TransferRepositoryPort transferRepositoryPort;
 

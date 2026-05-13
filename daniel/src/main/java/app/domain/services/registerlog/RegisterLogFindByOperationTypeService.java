@@ -4,7 +4,9 @@ import app.domain.models.Log.RegisterLog;
 import app.domain.ports.RegisterLogRepositoryPort;
 import app.domain.Exceptions.BusinessException;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RegisterLogFindByOperationTypeService {
     private final RegisterLogRepositoryPort registerLogRepositoryPort;
 

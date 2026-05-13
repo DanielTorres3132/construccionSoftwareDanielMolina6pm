@@ -12,7 +12,9 @@ import app.domain.services.user.UserValidateRoleService;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TransferRejectService {
     private final TransferRepositoryPort transferRepositoryPort;
     private final RegisterLogSaveService registerLogSaveService;

@@ -8,7 +8,9 @@ import app.domain.ports.BankAccountRepositoryPort;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BankAccountOpenService {
     private final BankAccountRepositoryPort bankAccountRepositoryPort;
 

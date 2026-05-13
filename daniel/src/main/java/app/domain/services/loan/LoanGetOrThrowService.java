@@ -2,7 +2,9 @@ package app.domain.services.loan;
 
 import app.domain.models.Loan.Loan;
 import app.domain.ports.LoanRepositoryPort;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LoanGetOrThrowService {
     private final LoanRepositoryPort loanRepositoryPort;
 

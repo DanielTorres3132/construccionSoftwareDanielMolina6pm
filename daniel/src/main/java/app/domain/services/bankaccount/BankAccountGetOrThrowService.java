@@ -2,7 +2,9 @@ package app.domain.services.bankaccount;
 
 import app.domain.models.Account.BankAccount;
 import app.domain.ports.BankAccountRepositoryPort;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BankAccountGetOrThrowService {
     private final BankAccountRepositoryPort bankAccountRepositoryPort;
 

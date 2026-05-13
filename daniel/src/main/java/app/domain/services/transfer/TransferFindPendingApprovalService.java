@@ -4,7 +4,9 @@ import app.domain.models.Transfer.Transfer;
 import app.domain.models.Transfer.enums.TransferStatus;
 import app.domain.ports.TransferRepositoryPort;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TransferFindPendingApprovalService {
     private final TransferRepositoryPort transferRepositoryPort;
 

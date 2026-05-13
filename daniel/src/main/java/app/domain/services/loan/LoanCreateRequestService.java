@@ -6,7 +6,9 @@ import app.domain.models.Loan.enums.LoanType;
 import app.domain.ports.LoanRepositoryPort;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LoanCreateRequestService {
     private final LoanRepositoryPort loanRepositoryPort;
 

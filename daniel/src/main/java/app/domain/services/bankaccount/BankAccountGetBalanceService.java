@@ -4,7 +4,9 @@ import app.domain.models.Account.BankAccount;
 import app.domain.models.Account.enums.AccountStatus;
 import app.domain.ports.BankAccountRepositoryPort;
 import java.math.BigDecimal;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BankAccountGetBalanceService {
     private final BankAccountRepositoryPort bankAccountRepositoryPort;
     private final BankAccountGetOrThrowService getOrThrowService;

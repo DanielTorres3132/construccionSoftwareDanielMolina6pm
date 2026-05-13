@@ -3,7 +3,9 @@ package app.domain.services.bankaccount;
 import app.domain.models.Account.BankAccount;
 import app.domain.ports.BankAccountRepositoryPort;
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BankAccountFindByHolderIdService {
     private final BankAccountRepositoryPort bankAccountRepositoryPort;
 

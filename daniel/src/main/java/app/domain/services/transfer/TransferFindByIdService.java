@@ -3,7 +3,9 @@ package app.domain.services.transfer;
 import app.domain.models.Transfer.Transfer;
 import app.domain.ports.TransferRepositoryPort;
 import app.domain.Exceptions.BusinessException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TransferFindByIdService {
     private final TransferRepositoryPort transferRepositoryPort;
 

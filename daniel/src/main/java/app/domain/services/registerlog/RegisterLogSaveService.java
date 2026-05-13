@@ -6,7 +6,9 @@ import app.domain.ports.RegisterLogRepositoryPort;
 import app.domain.Exceptions.BusinessException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RegisterLogSaveService {
     private final RegisterLogRepositoryPort registerLogRepositoryPort;
 

@@ -4,7 +4,9 @@ import app.domain.models.Loan.Loan;
 import app.domain.models.Loan.enums.LoanStatus;
 import app.domain.ports.LoanRepositoryPort;
 import java.time.LocalDate;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LoanDisburseService {
     private final LoanRepositoryPort loanRepositoryPort;
     private final LoanGetOrThrowService getOrThrowService;

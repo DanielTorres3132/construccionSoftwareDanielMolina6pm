@@ -9,11 +9,13 @@ import app.domain.Exceptions.BusinessException;
 import app.domain.services.registerlog.RegisterLogSaveService;
 import app.domain.services.user.UserFindByIdService;
 import app.domain.services.user.UserValidateRoleService;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
 public class TransferApproveService {
     private final TransferRepositoryPort transferRepositoryPort;
     private final RegisterLogSaveService registerLogSaveService;

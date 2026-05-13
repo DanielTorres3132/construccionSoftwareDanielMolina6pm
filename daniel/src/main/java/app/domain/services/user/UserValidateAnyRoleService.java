@@ -4,7 +4,9 @@ import app.domain.models.User.User;
 import app.domain.models.User.enums.SystemRole;
 import app.domain.models.User.enums.UserStatus;
 import app.domain.Exceptions.BusinessException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserValidateAnyRoleService {
     public void execute(User user, SystemRole... allowedRoles) {
         if (user.getUserStatus() != UserStatus.ACTIVE)
