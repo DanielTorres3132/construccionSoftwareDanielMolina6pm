@@ -1,6 +1,11 @@
 package app.application.adapters.api.controllers;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -56,6 +61,24 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<app.application.adapters.api.response.ErrorResponse> handleLoginMessageNotReadable(HttpMessageNotReadableException ex) {
+        var error = new app.application.adapters.api.response.ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Cuerpo de la petición inválido o ausente. Los campos 'document' y 'password' son obligatorios"
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<app.application.adapters.api.response.ErrorResponse> handleLoginMissingParam(MissingServletRequestParameterException ex) {
+        var error = new app.application.adapters.api.response.ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Falta parámetro requerido: " + ex.getParameterName()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @PostMapping("/refresh")

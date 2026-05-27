@@ -18,6 +18,7 @@ import app.domain.services.naturalpersonclient.NaturalPersonClientFindByIdServic
 import app.domain.services.loan.LoanApproveService;
 import app.domain.services.loan.LoanRejectService;
 import app.domain.services.loan.LoanGetOrThrowService;
+import app.domain.services.loan.LoanDisburseService;
 import app.domain.services.registerlog.RegisterLogFindByUserIdService;
 import app.domain.services.registerlog.RegisterLogFindByOperationTypeService;
 import app.domain.services.registerlog.RegisterLogFindByAffectedProductIdService;
@@ -43,6 +44,8 @@ public class InternalAnalystUseCase {
     @Autowired
     private LoanGetOrThrowService loanGetOrThrowService;
     @Autowired
+    private LoanDisburseService loanDisburseService;
+    @Autowired
     private RegisterLogFindByUserIdService registerLogFindByUserIdService;
     @Autowired
     private RegisterLogFindByOperationTypeService registerLogFindByOperationTypeService;
@@ -56,6 +59,7 @@ public class InternalAnalystUseCase {
                                   LoanApproveService loanApproveService,
                                   LoanRejectService loanRejectService,
                                   LoanGetOrThrowService loanGetOrThrowService,
+                                  LoanDisburseService loanDisburseService,
                                   RegisterLogFindByUserIdService registerLogFindByUserIdService,
                                   RegisterLogFindByOperationTypeService registerLogFindByOperationTypeService,
                                   RegisterLogFindByAffectedProductIdService registerLogFindByAffectedProductIdService) {
@@ -66,6 +70,7 @@ public class InternalAnalystUseCase {
         this.loanApproveService = loanApproveService;
         this.loanRejectService = loanRejectService;
         this.loanGetOrThrowService = loanGetOrThrowService;
+        this.loanDisburseService = loanDisburseService;
         this.registerLogFindByUserIdService = registerLogFindByUserIdService;
         this.registerLogFindByOperationTypeService = registerLogFindByOperationTypeService;
         this.registerLogFindByAffectedProductIdService = registerLogFindByAffectedProductIdService;
@@ -94,6 +99,12 @@ public class InternalAnalystUseCase {
         User user = userFindByIdService.execute(requestingUserId);
         userValidateRoleService.execute(user, SystemRole.INTERNAL_ANALYST);
         return loanApproveService.execute(loanId, requestingUserId, approvedAmount, interestRate);
+    }
+
+    public Loan disburseLoan(long requestingUserId, long loanId, String disbursementAccount) throws BusinessException {
+        User user = userFindByIdService.execute(requestingUserId);
+        userValidateRoleService.execute(user, SystemRole.INTERNAL_ANALYST);
+        return loanDisburseService.execute(loanId, disbursementAccount);
     }
 
     public Loan rejectLoan(long requestingUserId, long loanId, String reason) throws BusinessException {
