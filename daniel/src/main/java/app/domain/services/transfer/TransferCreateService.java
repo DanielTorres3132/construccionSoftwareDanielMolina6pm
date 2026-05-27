@@ -37,7 +37,7 @@ public class TransferCreateService {
     public Transfer execute(Transfer transfer, long requestingUserId) {
         User requestingUser = userFindByIdService.execute(requestingUserId);
         userValidateAnyRoleService.execute(requestingUser,
-                SystemRole.COMPANY_EMPLOYEE, SystemRole.COMPANY_SUPERVISOR);
+                SystemRole.COMPANY_EMPLOYEE, SystemRole.COMPANY_SUPERVISOR, SystemRole.NATURAL_PERSON_CLIENT);
         validateTransferFields(transfer);
         transfer.setCreationDate(LocalDateTime.now());
         transfer.setCreatorUserId(requestingUserId);
