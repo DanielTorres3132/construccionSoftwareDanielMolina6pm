@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import app.application.adapters.api.request.LoanApprovalRequest;
 import app.application.adapters.api.request.LoanRejectionRequest;
+import app.application.adapters.api.request.LoanDisbursementRequest;
 import app.application.adapters.api.response.AuditLogResponse;
 import app.application.adapters.api.response.LoanResponse;
 import app.application.usecases.InternalAnalystUseCase;
@@ -69,6 +70,15 @@ public class InternalAnalystController {
             @PathVariable long loanId,
             @Valid @RequestBody LoanRejectionRequest request) throws BusinessException {
         Loan loan = useCase.rejectLoan(requestingUserId, loanId, request.getReason());
+        return ResponseEntity.ok(toLoanResponse(loan));
+    }
+
+    @PostMapping("/loan/{loanId}/disburse")
+    public ResponseEntity<LoanResponse> disburseLoan(
+            @RequestParam long requestingUserId,
+            @PathVariable long loanId,
+            @Valid @RequestBody LoanDisbursementRequest request) throws BusinessException {
+        Loan loan = useCase.disburseLoan(requestingUserId, loanId, request.getDisbursementAccount());
         return ResponseEntity.ok(toLoanResponse(loan));
     }
 
