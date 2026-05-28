@@ -21,7 +21,7 @@ public class UserEntity {
     private String identificationId;
 
     @Column(name = "related_id")
-    private long relatedId;
+    private Long relatedId;
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
