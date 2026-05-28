@@ -14,7 +14,7 @@ public class User {
     private long id;
     private String fullName;
     private String identificationId;
-    private long relatedId;
+    private Long relatedId;
     private String email;
     private String phone;
     private String address;
